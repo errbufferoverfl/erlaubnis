@@ -54,10 +54,15 @@ class Authorization(MethodView):
         # here we will check how the request has been sent, let's assume though it's in the URL
         response_type = request.args.get("response_type")
         client_id = request.args.get("client_id")
-        redirect_url = request.args.get("redirect_url")
+        redirect_url = request.args.get("redirect_uri")
 
-        if len(response_type) > 1:
-            raise HTTPError(f"Request parameter 'response_type' included multiple times",
+        if not client_id:
+            raise HTTPError(f"Request parameter 'client_id' not provided",
+                            "mandatory_parameter_missing",
+                            http.client.UNPROCESSABLE_ENTITY)
+
+        if isinstance(client_id, list) and len(client_id) > 1:
+            raise HTTPError(f"Request parameter 'client_id' included multiple times",
                             "too_many_parameters",
                             http.client.UNPROCESSABLE_ENTITY)
 
@@ -66,36 +71,31 @@ class Authorization(MethodView):
                             "mandatory_parameter_missing",
                             http.client.UNPROCESSABLE_ENTITY)
 
+        if isinstance(response_type, list) and len(response_type) > 1:
+            raise HTTPError(f"Request parameter 'response_type' included multiple times",
+                            "too_many_parameters",
+                            http.client.UNPROCESSABLE_ENTITY)
+
         """
         If an authorization request is missing the "response_type" parameter,
         or if the response type is not understood, the authorization server
         MUST return an error response as described in Section 4.1.2.1.
         """
-        if response_type.lower() == ResponseType.TOKEN:
+        if response_type.lower() == ResponseType.TOKEN.value:
             pass
-        elif response_type.lower() == ResponseType.CODE:
+        elif response_type.lower() == ResponseType.CODE.value:
             pass
         else:
             raise HTTPError(f"unsupported_response_type: '{response_type}'",
                             "unsupported_response_type",
                             http.client.UNPROCESSABLE_ENTITY)
 
-        if len(client_id) > 1:
-            raise HTTPError(f"Request parameter 'client_id' included multiple times",
-                            "too_many_parameters",
-                            http.client.UNPROCESSABLE_ENTITY)
-
-        if not client_id:
-            raise HTTPError(f"Request parameter 'client_id' not provided",
-                            "mandatory_parameter_missing",
-                            http.client.UNPROCESSABLE_ENTITY)
-
-        if len(redirect_url) > 1:
-            raise HTTPError(f"Request parameter 'redirect_url' included multiple times",
-                            "too_many_parameters",
-                            http.client.UNPROCESSABLE_ENTITY)
-
         if not redirect_url:
             raise HTTPError(f"Request parameter 'redirect_url' not provided",
                             "mandatory_parameter_missing",
+                            http.client.UNPROCESSABLE_ENTITY)
+
+        if isinstance(redirect_url, list) and len(redirect_url) > 1:
+            raise HTTPError(f"Request parameter 'redirect_url' included multiple times",
+                            "too_many_parameters",
                             http.client.UNPROCESSABLE_ENTITY)
