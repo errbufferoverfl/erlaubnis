@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "rfc-oauth "
+version = "0.1.0"
+description = ""
+authors = ["errbufferoverfl <merrymet@errbufferoverfl.me>"]
+readme = "README.md"
+packages = [{include = "rfc_oauth "}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^2.2.3"
+sqlalchemy = "^2.0.4"
+flask-sqlalchemy = "^3.0.3"
+flask-migrate = "^4.0.4"
+flask-marshmallow = "^0.14.0"
+marshmallow = "^3.19.0"
+marshmallow-enum = "^1.5.1"
+marshmallow-sqlalchemy = "^0.29.0"
+flask-smorest = "^0.40.0"
+flask-security-too = "^5.1.1"
+bcrypt = "^4.0.1"
+pytest = "^7.2.2"
+pytest-flask = "^1.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
