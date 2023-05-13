@@ -1,10 +1,9 @@
 [tool.poetry]
-name = "rfc-oauth "
+name = "erlaubnis"
 version = "0.1.0"
 description = ""
 authors = ["errbufferoverfl <merrymet@errbufferoverfl.me>"]
 readme = "README.md"
-packages = [{include = "rfc_oauth "}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
