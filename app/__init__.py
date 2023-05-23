@@ -1,4 +1,4 @@
-import flask_security
+import flask_security  # noqa
 from flask import Flask
 from flask_login import LoginManager
 from flask_marshmallow import Marshmallow
@@ -93,7 +93,7 @@ def register_extensions(app: Flask) -> None:
     principals.init_app(app)
 
     marshmallow.init_app(app)
-    migrate.init_app(app, db, render_as_batch=True)
+    migrate.init_app(app, db)
     api.init_app(app)
 
 
