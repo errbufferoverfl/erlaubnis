@@ -1,101 +1,183 @@
-# OAuth 2.0
+<h1 align="center">erlaubnis</h1>
 
-A Python / Flask implementation of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749). For demo purposes only.
+<div align="center">
 
-## Abstract
+</div>
+<div align="center">
+  <strong>An experimental implementation of RFC 6749.</strong>
+</div>
+<div align="center">
+  A dumpster fire of Auth2 practices.
+</div>
 
-The OAuth 2.0 authorization framework enables a third-party
-application to obtain limited access to an HTTP service, either on
-behalf of a resource owner by orchestrating an approval interaction
-between the resource owner and the HTTP service, or by allowing the
-third-party application to obtain access on its own behalf.
+<br />
 
-## 1.1. Roles
+<div align="center">
+  <!-- Stability -->
+  <!-- NPM version -->
+  <!-- Build Status -->
+  <!-- Test Coverage -->
+  <!-- Downloads -->
+  <!-- Standard -->
+</div>
 
-OAuth defines four roles:
+<div align="center">
+  <h3>
+    <a href="https://example.com">
+      Website
+    </a>
+    <span> | </span>
+    <a href="https://github.com/erlaubnis/erlaubnis-handbook">
+      Handbook
+    </a>
+    <span> | </span>
+    <a href="https://github.com/choojs/choo/blob/master/.github/CONTRIBUTING.md">
+      Contributing
+    </a>
+  </h3>
+</div>
 
-- **resource owner:** An entity capable of granting access to a protected resource.
-  When the resource owner is a person, it is referred to as an
-  end-user.
+<div align="center">
+  <sub>The little experiment that could. Built with ❤︎ by
+  <a href="https://twitter.com/errbufferoverfl">errbufferoverfl</a>
+</div>
 
-- **resource server:** The server hosting the protected resources, capable of accepting
-  and responding to protected resource requests using access tokens.
+## Introduction
 
-- **client:** An application making protected resource requests on behalf of the
-  resource owner and with its authorization. The term "client" does
-  not imply any particular implementation characteristics (e.g.,
-  whether the application executes on a server, a desktop, or other
-  devices).
+erlaubnis is a minimal viable OAuth2 Authorisation server that experiments with how one can go about implementing the standards, best practices and informational RFCs. It isn't made for production deployment or use.
 
-- **authorization server:** The server issuing access tokens to the client after successfully
-  authenticating the resource owner and obtaining authorization.
+## Table of contents
 
-The interaction between the authorization server and resource server
-is beyond the scope of this specification. The authorization server
-may be the same server as the resource server or a separate entity.
-A single authorization server may issue access tokens accepted by
-multiple resource servers.
+- [Introduction](#introduction)
+- [Tech Stack](#tech-stack)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Thank you!](#thank-you)
 
-### 1.2. Protocol Flow
+## Tech Stack
 
-```
-     +--------+                               +---------------+
-     |        |--(A)- Authorization Request ->|   Resource    |
-     |        |                               |     Owner     |
-     |        |<-(B)-- Authorization Grant ---|               |
-     |        |                               +---------------+
-     |        |
-     |        |                               +---------------+
-     |        |--(C)-- Authorization Grant -->| Authorization |
-     | Client |                               |     Server    |
-     |        |<-(D)----- Access Token -------|               |
-     |        |                               +---------------+
-     |        |
-     |        |                               +---------------+
-     |        |--(E)----- Access Token ------>|    Resource   |
-     |        |                               |     Server    |
-     |        |<-(F)--- Protected Resource ---|               |
-     +--------+                               +---------------+
-```
+Here's a brief high-level overview of the tech stack erlaubnis uses:
 
-The abstract OAuth 2.0 flow illustrated in Figure 1 describes the
-interaction between the four roles and includes the following steps:
+- The project is written in Python & uses the Flask micro web framework.
+- For persistent storage (database), the app uses SQLite for local deployments.
+- To send emails, the app can be configured to use a local SMTP mailer, or Mailgun.
+- Secret hashing is handled by bcrypt.
 
-(A)  The client requests authorization from the resource owner. The
-authorization request can be made directly to the resource owner
-(as shown), or preferably indirectly via the authorization
-server as an intermediary.
+## Getting Started
 
-(B)  The client receives an authorization grant, which is a
-credential representing the resource owner's authorization,
-expressed using one of four grant types defined in this
-specification or using an extension grant type. The
-authorization grant type depends on the method used by the
-client to request authorization and the types supported by the
-authorization server.
+<!-- GETTING STARTED -->
 
-(C)  The client requests an access token by authenticating with the
-authorization server and presenting the authorization grant.
+erlaubnis hasn't been built for real world deployment on the Internet.
 
-(D)  The authorization server authenticates the client and validates
-the authorization grant, and if valid, issues an access token.
-
-(E)  The client requests the protected resource from the resource
-server and authenticates by presenting the access token.
-
-(F)  The resource server validates the access token, and if valid,
-serves the request.
-
-The preferred method for the client to obtain an authorization grant
-from the resource owner (depicted in steps (A) and (B)) is to use the
-authorization server as an intermediary, which is illustrated in
-Figure 3 in Section 4.1.
-
-## Quickstart
+Set your app's secret key as an environment variable. For example, add the following to your `.bashrc` or `
+.bash_profile::
 
 ```shell
-cd rfc-oauth
-poetry install
-export FLASK-APP=run.py
+export SECRET='something-really-secret'
+```
+
+Before running shell commands, set ``FLASK_APP`` and ``FLASK_DEBUG`` environment variables::
+
+```shell
+export FLASK_APP=run.py
+export FLASK_DEBUG=1
+```
+
+Once the app is loaded various Flask utility functions can be accessed via the `flask` commend:
+
+**Migrations**
+
+When changes are made to the app's models a new migration will need to be run to propogate these changes to the database. Migrations are handled by `flask-migrations` and can be found in the `migrations` directory.
+
+erlaubnis should always ship with a migrations directory, however, in the case it doesn't, or you need to delete it you can reinitialise the directory using:
+
+```shell
+flask db init --package
+``
+
+To create a new migration run:
+
+```shell
+flask db migrate
+```
+
+To apply the migration to the database run:
+
+```shell
+flask db upgrade
+```
+
+To run the web application use:
+
+```shell
 flask run
 ```
+
+## Roadmap
+
+<!-- ROADMAP -->
+
+See the [open issues](https://github.com/errbufferoverfl/mygardenjournal/issues) for a list of proposed features (and
+known issues).
+
+<!-- CONTRIBUTING -->
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any
+contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<!-- LICENSE -->
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE.md) for more information.
+
+<!-- CONTACT -->
+
+Your Name - [@errbufferoverfl](https://twitter.com/errbufferoverfl) - email
+
+Project
+Link: [https://github.com/errbufferoverfl/mygardenjournal](https://github.com/errbufferoverfl/mygardenjournal)
+
+
+<!-- ACKNOWLEDGEMENTS -->
+
+* []()
+* []()
+* []()
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
+[contributors-shield]: https://img.shields.io/github/contributors/errbufferoverfl/mygardenjournal.svg?style=flat-square
+
+[contributors-url]: https://github.com/errbufferoverfl/mygardenjournal/graphs/contributors
+
+[forks-shield]: https://img.shields.io/github/forks/errbufferoverfl/mygardenjournal.svg?style=flat-square
+
+[forks-url]: https://github.com/errbufferoverfl/mygardenjournal/network/members
+
+[stars-shield]: https://img.shields.io/github/stars/errbufferoverfl/mygardenjournal.svg?style=flat-square
+
+[stars-url]: https://github.com/errbufferoverfl/mygardenjournal/stargazers
+
+[issues-shield]: https://img.shields.io/github/issues/errbufferoverfl/mygardenjournal.svg?style=flat-square
+
+[issues-url]: https://github.com/errbufferoverfl/mygardenjournal/issues
+
+[license-shield]: https://img.shields.io/github/license/errbufferoverfl/mygardenjournal.svg?style=flat-square
+
+[license-url]: https://github.com/errbufferoverfl/mygardenjournal/blob/master/LICENSE.txt
+
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
+
+[linkedin-url]: https://linkedin.com/in/errbufferoverfl
+
+[product-screenshot]: images/screenshot.png
