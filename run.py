@@ -8,3 +8,6 @@ from config import DebugConfiguration, BaseConfiguration
 CONFIG = DebugConfiguration if get_debug_flag() else BaseConfiguration
 
 app = create_app(CONFIG)
+
+if __name__ == '__main__':
+    app.run()
