@@ -6,8 +6,17 @@ from app import db
 from app.core.models import BaseModel
 
 
-class ClientUsers(db.Model):
+class ClientInstallation(db.Model):
     __tablename__ = "client_users"
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column("user_id", db.String(), db.ForeignKey("user.fs_uniquifier"))
+
+    client_id = db.Column("client_id", db.String(), db.ForeignKey("client._id"))
+    client_secret = db.Column("client_secret", db.String())
+
+
+class ClientOwner(db.Model):
+    __tablename__ = "client_owner"
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column("user_id", db.String(), db.ForeignKey("user.fs_uniquifier"))
     client_id = db.Column("client_id", db.String(), db.ForeignKey("client._id"))
@@ -15,27 +24,13 @@ class ClientUsers(db.Model):
 
 class Client(BaseModel):
     __tablename__ = "client"
-
-    """
-    Client Identifier
-    
-    The authorization server issues the registered client a client identifier -- a unique string representing the 
-    registration information provided by the client.  The client identifier is not a secret; it is exposed to the 
-    resource owner and MUST NOT be used alone for client authentication.  The client identifier is unique to the 
-    authorization server.
-    """
     _id = db.Column(String(255), unique=True, nullable=False, primary_key=True, index=True)
+    _name = db.Column(String(120), nullable=False)
 
-    """
-    Client Name
-    """
-    _name = db.Column(String(120))
-
-    _password = db.Column(String(120))
     _is_confidential = db.Column(db.Boolean, nullable=False)
-    _is_public = db.Column(db.Boolean, nullable=False)
 
     _client_metadata = db.Column('client_metadata', Text)
+
     owner_id = db.Column(db.Integer, db.ForeignKey('user.fs_uniquifier'))
     owner = db.relationship("User", back_populates="client")
 
@@ -43,13 +38,28 @@ class Client(BaseModel):
     created_at = db.Column(db.DateTime, server_default=func.now(), nullable=False)
     updated_at = db.Column(db.DateTime, onupdate=func.now(), nullable=True)
 
-    def __init__(self, user, name, **kwargs):
+    def __init__(self, user, name):
         self._id = self.generate_id()
-        self.owner = user
         self._name = name
+        self.owner = user
 
-        self.is_pubic = False
-        self.is_confidential = True
+        self._is_confidential = True
+
+    @staticmethod
+    def generate_id():
+        return uuid.uuid4().__str__()
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
 
     @property
     def redirect_uris(self) -> list:
@@ -69,31 +79,10 @@ class Client(BaseModel):
         """
         return self.client_metadata.get('redirect_uris', [])
 
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @property
-    def password(self):
-        """
-        Because we only support confidential clients, we can always support client passwords
-
-        Returns:
-
-        """
-        return self._password
-
-    @password.setter
-    def password(self, password):
-        self._password = password
-
-    @property
-    def id(self):
-        return self._id
+    def valid_redirect_uri(self, redirect_uri):
+        if redirect_uri in self.redirect_uris:
+            return True
+        return False
 
     @property
     def scopes(self):
@@ -103,57 +92,16 @@ class Client(BaseModel):
     def allowed_grant_types(self):
         return self.client_metadata.get('allowed_grant_types', [])
 
+    def valid_grant_type(self, grant_type):
+        if grant_type in self.grant_type:
+            return True
+        return False
+
     @property
     def allowed_response_types(self):
         return self.client_metadata.get('allowed_response_types', [])
 
-    """
-    Client Types
-    
-    The client type designation is based on the authorization server's definition of secure authentication and its 
-    acceptable exposure levels of client credentials. The authorization server SHOULD NOT make assumptions about the 
-    client type.
-    """
-
-    @property
-    def is_pubic(self) -> bool:
-        """
-        Clients incapable of maintaining the confidentiality of their credentials (e.g., clients executing on the device
-        used by the resource owner, such as an installed native application or a web browser-based application), and
-        incapable of secure client authentication via any other means.
-        """
-        return self._is_public
-
-    @is_pubic.setter
-    def is_pubic(self, public: bool):
-        """
-        Args:
-            public (bool):
-
-        Returns:
-
-        """
-        self._is_public = public
-
-    @property
-    def is_confidential(self):
-        """
-        Clients capable of maintaining the confidentiality of their credentials (e.g., client implemented on a secure server
-        with restricted access to the client credentials), or capable of secure client authentication using other means.
-        """
-        return self._is_confidential
-
-    @is_confidential.setter
-    def is_confidential(self, confidential: bool):
-        """
-        Args:
-            confidential (bool):
-
-        Returns:
-
-        """
-        self._is_confidential = confidential
-
-    @staticmethod
-    def generate_id():
-        return uuid.uuid4().__str__()
+    def valid_response_types(self, response_types):
+        if response_types in self.response_types:
+            return True
+        return False
