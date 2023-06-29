@@ -4,7 +4,6 @@ from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint
 
-from app.auth.enum import ResponseType
 from app.core.exceptions import HTTPError
 
 blueprint = Blueprint("auth", "auth", url_prefix="/api", description="OAuth2 authorization endpoints")
@@ -52,7 +51,6 @@ class Authorization(MethodView):
         """
 
         # here we will check how the request has been sent, let's assume though it's in the URL
-        response_type = request.args.get("response_type")
         client_id = request.args.get("client_id")
         redirect_url = request.args.get("redirect_uri")
 

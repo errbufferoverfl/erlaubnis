@@ -10,8 +10,6 @@ def test_authorize(client):
         ("", "token", "https://example.com", "mandatory_parameter_missing"),
         # ("A123456", "code", "https://example.com", ""),
         # ("A123456", "token", "https://example.com", ""),
-        ("A123456", "jibberish", "https://example.com", "unsupported_response_type"),
-        ("A123456", "", "https://example.com", "mandatory_parameter_missing"),
         ("A123456", "code", "", "mandatory_parameter_missing"),
         ("A123456", "token", "", "mandatory_parameter_missing"),
 ))
