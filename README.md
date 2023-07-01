@@ -43,9 +43,76 @@ stateDiagram-v2
 	Authorised --> [*]
 ```
 
+**Erlaubnis Database Schema**
 
-
-
+```mermaid
+erDiagram
+    USER {
+        string id
+        string username
+        string password
+        datetime created_at 
+        datetime updated_at
+    }
+    
+    ROLE {
+        integer id
+        string name
+        string description
+    }
+    
+    CLIENT {
+        string id
+        string client_name
+        string token_endpoint_auth_method
+        array grant_types
+    }
+    
+    METADATA {
+        string logo_uri
+        array contacts
+        string policy_uri
+        string tos_uri
+        string client_uri
+    }
+    
+    CONFIGURATION {
+        integer version
+        string jwks
+        string jwks_uri
+        string scope
+    }
+    
+    REGISTRATION_RECORD {
+        int id
+        foreign_key user_id
+        foreign_key client_id
+        datetime installation_time
+    }
+    
+    INSTALLATION_RECORD {
+        int id
+        foreign_key user_id
+        foreign_key client_id
+        foreign_key configuration
+        datetime installation_time
+    }
+    
+    STATE_RECORD {
+        foreign_key user_id
+        foreign_key client
+        string state
+    }
+    
+    USER ||--o{ ROLE : has
+    USER ||--o{ CLIENT : registers
+    REGISTRATION_RECORD ||--o{ CLIENT : generates
+    INSTALLATION_RECORD ||--o{ CLIENT : generates
+    STATE_RECORD ||--o{ CLIENT : generates
+    USER ||--o{ CLIENT : installs
+    CLIENT ||--o{ CONFIGURATION : contains
+    CLIENT ||--||METADATA : contains
+```
 
 ## Quickstart
 
