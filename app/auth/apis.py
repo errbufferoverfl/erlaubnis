@@ -4,7 +4,6 @@ from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint
 
-from app.auth.enum import ResponseType
 from app.core.exceptions import HTTPError
 
 blueprint = Blueprint("auth", "auth", url_prefix="/api", description="OAuth2 authorization endpoints")
@@ -52,7 +51,6 @@ class Authorization(MethodView):
         """
 
         # here we will check how the request has been sent, let's assume though it's in the URL
-        response_type = request.args.get("response_type")
         client_id = request.args.get("client_id")
         redirect_url = request.args.get("redirect_uri")
 
@@ -64,30 +62,6 @@ class Authorization(MethodView):
         if isinstance(client_id, list) and len(client_id) > 1:
             raise HTTPError(f"Request parameter 'client_id' included multiple times",
                             "too_many_parameters",
-                            http.client.UNPROCESSABLE_ENTITY)
-
-        if not response_type:
-            raise HTTPError(f"Request parameter 'response_type' not provided",
-                            "mandatory_parameter_missing",
-                            http.client.UNPROCESSABLE_ENTITY)
-
-        if isinstance(response_type, list) and len(response_type) > 1:
-            raise HTTPError(f"Request parameter 'response_type' included multiple times",
-                            "too_many_parameters",
-                            http.client.UNPROCESSABLE_ENTITY)
-
-        """
-        If an authorization request is missing the "response_type" parameter,
-        or if the response type is not understood, the authorization server
-        MUST return an error response as described in Section 4.1.2.1.
-        """
-        if response_type.lower() == ResponseType.TOKEN.value:
-            pass
-        elif response_type.lower() == ResponseType.CODE.value:
-            pass
-        else:
-            raise HTTPError(f"unsupported_response_type: '{response_type}'",
-                            "unsupported_response_type",
                             http.client.UNPROCESSABLE_ENTITY)
 
         if not redirect_url:
