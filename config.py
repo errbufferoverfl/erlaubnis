@@ -11,6 +11,10 @@ class BaseConfiguration(object):
     SECURITY_PASSWORD_SALT = "SuperSecretPasswordSalt"
     SECRET_KEY = 'SecretKeyForSessionSigning'
 
+    UUID3_NAMESPACE = {
+        "app_name": "c767329d-3730-4522-b739-e7883a44c64d"
+    }
+
     THREADS_PER_PAGE = 8
 
     DATABASE = 'app.db'
