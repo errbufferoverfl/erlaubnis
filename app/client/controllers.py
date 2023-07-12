@@ -5,11 +5,15 @@ from app import db
 from app.client import models
 
 
-def get():
-    pass
+def get(client_id: str, **kwargs):
+    client = models.Client.query.filter_by(client_id=client_id).first()
+    if not client:
+        return None
+    else:
+        return client
 
 
-def create(user: app.user.models.User, client_name: str):
+def create(user: app.user.models.User, client_name: str, **kwargs):
     """
     Creates a new client in the database using the provided information.
 
@@ -18,7 +22,6 @@ def create(user: app.user.models.User, client_name: str):
     Returns:
 
     """
-
     client = models.Client(user, client_name)
     try:
         db.session.add(client)
