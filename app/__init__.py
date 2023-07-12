@@ -1,5 +1,7 @@
+from uuid import uuid4
+
 import flask_security
-from flask import Flask
+from flask import Flask, g
 from flask_login import LoginManager
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
@@ -68,6 +70,10 @@ def create_app(config_object) -> Flask:
                 if identity.user.roles:
                     for role in identity.user.roles:
                         identity.provides.add(RoleNeed(role._name))
+
+        @app.before_request
+        def before_request_handler():
+            g.request_id = uuid4()
 
         return app
 
