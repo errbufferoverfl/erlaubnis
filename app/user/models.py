@@ -44,8 +44,7 @@ class User(db.Model, UserMixin):
     updated_at = db.Column(db.DateTime, onupdate=func.now(), nullable=True)
 
     roles = relationship('Role', secondary='roles_users', backref=backref('users', lazy='dynamic'))
-
-    client = relationship("Client", back_populates="owner")
+    clients = db.relationship('Client', backref='user', lazy=True)
 
     def __init__(self, username, password, **kwargs):
         """Create instance."""
