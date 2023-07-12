@@ -119,6 +119,6 @@ erDiagram
 ```shell
 cd rfc-oauth
 poetry install
-export FLASK-APP=run.py
+export FLASK_APP=run.py
 flask run
 ```
