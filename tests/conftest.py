@@ -1,24 +1,34 @@
 import pytest
 
-from app import create_app
+from app import create_app, db
+from app.client.models import Client
+from app.user.models import User
 from config import DebugConfiguration
 
 
-@pytest.fixture()
-def app():
-    config = DebugConfiguration
-    app = create_app(config)
-    # other setup can go here
+@pytest.fixture(scope='module')
+def test_client():
+    flask_app = create_app(DebugConfiguration)
 
-    yield app
-    # clean up / reset resources here
-
-
-@pytest.fixture()
-def client(app):
-    return app.test_client()
+    with flask_app.test_client() as testing_client:
+        with flask_app.app_context():
+            yield testing_client
 
 
-@pytest.fixture()
-def runner(app):
-    return app.test_cli_runner()
+@pytest.fixture(scope='module')
+def init_database(app):
+    # Create the database and the database table
+    db.create_all()
+
+    # Insert user data
+    default_user = User(username="test_user", password="password")
+    second_user = User(username="test_user_two", password="password")
+    db.session.add(default_user)
+    db.session.add(second_user)
+
+    # Commit the changes for the users
+    db.session.commit()
+
+    yield  # this is where the testing happens!
+
+    db.drop_all()
