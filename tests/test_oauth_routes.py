@@ -1,8 +1,8 @@
 import pytest
 
 
-def test_authorize(client):
-    assert client.get('/authorize').status_code == 200
+def test_authorize(test_client):
+    assert test_client.get('/authorize').status_code == 200
 
 
 @pytest.mark.parametrize(('client_id', 'redirect_uri', 'message'), (
@@ -13,8 +13,8 @@ def test_authorize(client):
         ("A123456", "", "mandatory_parameter_missing"),
         ("A123456", "", "mandatory_parameter_missing"),
 ))
-def test_request_example(client, client_id, redirect_uri, message):
-    response = client.get(
+def test_request_example(test_client, client_id, redirect_uri, message):
+    response = test_client.get(
         "/api/authorize",
         query_string={"client_id": client_id, "redirect_uri": redirect_uri}
     )
