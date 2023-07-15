@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 
 from flask import current_app
+from xid import Xid
 
 from app import db
 from app.core.models import BaseModel
@@ -94,7 +95,7 @@ class Client(BaseModel):
     resource owner and MUST NOT be used alone for client authentication.  The client identifier is unique to the 
     authorization server.
     """
-    id = db.Column(db.String(36), unique=True, nullable=False, primary_key=True, index=True)
+    id = db.Column(db.String(20), unique=True, nullable=False, primary_key=True, index=True)
     """
     Human-readable string name of the client to be presented to the end-user during authorization.
     If omitted during client configuration, the `_id` will be used. 
@@ -124,30 +125,19 @@ class Client(BaseModel):
         Bearer Token Profiles [RFC7522].
     """
     grant_types = db.Column(db.LargeBinary())
-    owner_id = db.Column(db.String, db.ForeignKey('user.fs_uniquifier'), nullable=False)
+    _owner_id = db.Column(db.String, db.ForeignKey('user.fs_uniquifier'), nullable=False)
 
-    def __init__(self, name: str, token_endpoint_auth_method, grant_types: list):
-        self.client_name = name
+    def __init__(self, name: str, token_endpoint_auth_method: int, grant_types: list, owner_id: str):
         self.id = self.generate_id()
+        self.client_name = name
         self.token_endpoint_auth_method = token_endpoint_auth_method
         self.grant_types = str(grant_types)
+        self.owner_id = owner_id
 
-    def generate_id(self):
-        uuid_namespace = current_app.config.get("UUID3_NAMESPACE", {})
-        app_name_namespace = uuid_namespace.get("app_name")
-        try:
-            app_name_namespace = uuid.UUID(app_name_namespace)
-        except TypeError as err:
-            logging.critical(err)
-        except ValueError as err:
-            logging.critical(err)
-
-        try:
-            client_id = uuid.uuid3(app_name_namespace, self.client_name).__str__()
-        except TypeError:
-            client_id = uuid.uuid4().__str__()
-        else:
-            return client_id
+    @staticmethod
+    def generate_id():
+        guid = Xid()
+        return guid.string()
 
     @property
     def client_name(self):
@@ -159,3 +149,14 @@ class Client(BaseModel):
     @client_name.setter
     def client_name(self, name):
         self._client_name = name
+
+    @property
+    def owner_id(self):
+        return self._owner_id
+
+    @owner_id.setter
+    def owner_id(self, owner_id: str):
+        if owner_id:
+            self._owner_id = owner_id
+        else:
+            raise TypeError("Client must have a valid owner associated with it.")
