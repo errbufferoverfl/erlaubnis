@@ -32,3 +32,9 @@ def init_database(app):
     yield  # this is where the testing happens!
 
     db.drop_all()
+
+
+@pytest.fixture(scope='module')
+def new_user(test_client):
+    user = User('username@example.com', 'Password1!')
+    return user
