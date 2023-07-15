@@ -167,8 +167,9 @@ erDiagram
     CLIENT {
         string id
         string client_name
-        string token_endpoint_auth_method
-        array grant_types
+        int token_endpoint_auth_method
+        list grant_types
+        string owner_id
     }
     
     METADATA {
