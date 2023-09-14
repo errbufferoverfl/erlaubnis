@@ -51,8 +51,19 @@ def create_app(config_object) -> Flask:
     Returns:
         a Flask application
     """
-    app = Flask(__name__.split('.')[0], template_folder="../templates/", static_folder="../static/")
-    app.url_map.strict_slashes = False
+    app = Flask(__name__.split('.')[0])
+
+    @app.context_processor
+    def inject_html_metadata():
+        return dict(
+            title=config_object.TITLE,
+            description=config_object.DESCRIPTION,
+            authors=config_object.AUTHORS,
+            tags=config_object.TAGS,
+            lang=config_object.LANG,
+        )
+
+    app.url_map.strict_slashes = True
     app.config.from_object(config_object)
 
     with app.app_context():
@@ -89,15 +100,14 @@ def register_extensions(app: Flask) -> None:
         None
     """
     db.init_app(app)
+
     # Setup Flask-Security for handling login and user management
     from app.models import User, Role
 
     user_datastore = flask_security.SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, user_datastore, register_blueprint=True)
     login_manager.init_app(app)
-
     principals.init_app(app)
-
     marshmallow.init_app(app)
     migrate.init_app(app, db, render_as_batch=True)
     api.init_app(app)
