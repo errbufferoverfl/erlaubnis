@@ -22,24 +22,18 @@ A small dopamine rabbit hole.
 </div>  
 
 <div align="center">  
-<h3>  
-<a href="https://example.com">  
-Website  
-</a>  
+<h3>
+<a href="https://example.com">Website</a>  
 <span> | </span>  
-<a href="https://github.com/erlaubnis/erlaubnis-handbook">  
-Handbook  
-</a>  
+<a href="https://github.com/erlaubnis">Handbook</a>  
 <span> | </span>  
-<a href="https://github.com/choojs/choo/blob/master/.github/CONTRIBUTING.md">  
-Contributing  
-</a>  
+<a href="https://github.com/choojs/choo/blob/master/.github/CONTRIBUTING.md">Contributing</a>  
 </h3>  
 </div>  
 
 <div align="center">  
 <sub>The little experiment that could. Built with ❤︎ by  
-<a href="https://twitter.com/errbufferoverfl">errbufferoverfl</a>  
+<a href="https://twitter.com/errbufferoverfl">errbufferoverfl</a>
 </div>  
 
 ## Introduction
@@ -73,14 +67,14 @@ Set your app's secret key as an environment variable. For example, add the follo
 .bash_profile::
 
 ```shell  
-export SECRET='something-really-secret'  
+export SECRET='something-really-secret'
 ```  
 
 Before running shell commands, set ``FLASK_APP`` and ``FLASK_DEBUG`` environment variables::
 
 ```shell  
-export FLASK_APP=run.py  
-export FLASK_DEBUG=1  
+export FLASK_APP=run.py
+export FLASK_DEBUG=1
 ```  
 
 Once the app is loaded various Flask utility functions can be accessed via the `flask` commend:
@@ -97,14 +91,14 @@ flask db init --package
   
 To create a new migration run:  
   
-```shell  
-flask db migrate  
+```shell
+flask db migrate
 ```  
 
 To apply the migration to the database run:
 
 ```shell  
-flask db upgrade  
+flask db upgrade
 ```  
 
 For those less familiar, the abstract OAuth 2.1 protocol flow and the interaction between the four key roles is summarized by the following sequence diagram.
@@ -221,7 +215,7 @@ erDiagram
 ## Quickstart
 
 ```shell
-cd rfc-oauth
+cd erlaubnis
 poetry install
 export FLASK_APP=run.py
 flask run
